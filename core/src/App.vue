@@ -1,12 +1,19 @@
 <template>
   <div id="app">
     <router-view/>
+    <loading v-show="loadingState"></loading>
   </div>
 </template>
 
 <script>
+import { Loading } from '@/components/common'
+import { mapGetters } from 'vuex'
 export default {
-  name: 'App'
+  name: 'App',
+  components: { Loading },
+  computed: {
+    ...mapGetters(['loadingState'])
+  }
 }
 </script>
 
@@ -16,6 +23,5 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

@@ -11,6 +11,7 @@
 <script>
 import BScroll from 'better-scroll'
 import { fetchTopics } from '@/api'
+import { mapActions } from 'vuex'
 export default {
   name: 'swiper-page',
   data () {
@@ -27,14 +28,21 @@ export default {
   mounted () {
   },
   methods: {
+    ...mapActions(['setLoading']),
     fetchTopics () {
+      this.setLoading(true)
       const params = {
         page: this.page || 1,
         limit: 15
       }
       fetchTopics(params)
         .then(res => {
-          this.topics = this.topics.concat(res.data)
+          this.setLoading(false)
+          if (this.page === 1) {
+            this.topics = res.data
+          } else {
+            this.topics = this.topics.concat(res.data)
+          }
           if (!this.scroller) {
             this.$nextTick(() => {
               this.scroller = new BScroll('.wrapper', {
@@ -49,13 +57,12 @@ export default {
               this.scroller.on('pullingDown', () => {
                 console.log('pullingDown')
                 this.page = 1
-                this.topics = []
                 this.fetchTopics()
               })
               this.scroller.on('pullingUp', () => {
                 console.log('pullingUp')
                 this.page++
-                this.fetchTopics()
+                // this.fetchTopics()
               })
             })
           } else {
@@ -69,6 +76,7 @@ export default {
           }
         })
         .catch(error => {
+          this.setLoading(false)
           console.log(error)
         })
     }
